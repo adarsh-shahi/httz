@@ -1,0 +1,25 @@
+{
+	"name": "httz",
+	"version": "1.0.0",
+	"description": "alternative for http module",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon src/index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/adarsh-shahi/httz.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/adarsh-shahi/httz/issues"
+	},
+	"homepage": "https://github.com/adarsh-shahi/httz#readme",
+	"devDependencies": {
+		"nodemon": "^2.0.22"
+	}
+}
