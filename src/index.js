@@ -1,6 +1,6 @@
 import net from "net";
 
-class Httz {
+export default class httz {
 	#tcpServer;
 	#request;
 	#response;
@@ -20,15 +20,12 @@ class Httz {
 
 	#setResponse() {
 		const writeResponse = (arg) => {
-			console.log("called: " + arg);
-			console.log("count");
 			this.#contentLength += arg.length;
-			console.log(this.#contentLength);
 			const content = `${this.#data}\r\n\r\n${arg}`;
-			console.log(arg);
-			console.log(content);
 			this.#data += content;
-			return `HTTP/1.1 ${this.#response.statusCode} OK\r\nContent-Length: ${
+			return `HTTP/1.1 ${
+				this.#response.statusCode
+			} OK\r\nContent-Type: application/json\r\nContent-Length: ${
 				this.#contentLength
 			}${content}`;
 		};
@@ -36,35 +33,30 @@ class Httz {
 		this.#response = {
 			statusCode: 200,
 
-			// write: (arg) => {
-			// 	this.#socket.write(writeResponse(arg));
-			// },
-
 			end: (arg) => {
-				// if (arg) {
-				// 	const sike = writeResponse(arg);
-				// 	this.#socket.write(sike);
-				// }
-				this.#socket.end(writeResponse(arg));
+				if (arg) {
+					const sike = writeResponse(arg);
+					this.#socket.write(sike, "utf-8", () => {
+						this.#socket.end();
+					});
+				} else {
+					this.#socket.write(writeResponse(""), "utf-8", () => {
+						this.#socket.end();
+					});
+				}
 			},
 		};
 	}
 
 	createServer(cb) {
-		this.tcpServer = net.createServer((socket) => {
-			this.#socket = socket;
+		this.#tcpServer = net.createServer((socket) => {
 			let body = "";
-			this.#contentLength = 0;
-			this.#data = "";
-			// socket.on("connect", () => {
-			// 	console.log("COnnected");
-			// });
 			socket.on("data", (data) => {
-				body = data.toString("utf-8");
+				this.#data = "";
+				this.#contentLength = 0;
+				this.#socket = socket;
+				body += data.toString("utf-8");
 				const lines = body.split("\r\n");
-				// console.log(lines);
-				const [method, url, version] = lines[0].split(" ");
-
 				if (lines.length > 1) {
 					const contentTypeHeader = lines.find((line) =>
 						line.startsWith("Content-Type:")
@@ -77,6 +69,8 @@ class Httz {
 						this.#request.data = JSON.parse(body.slice(contentIndex));
 					}
 				}
+
+				// Attach headers to req
 				for (let i = 0; i < lines.length; i++) {
 					const [key, value] = lines[i].split(":");
 					if (!key || !value) continue;
@@ -95,23 +89,18 @@ class Httz {
 		if (args[0] && typeof args[0] !== "number")
 			throw new Error("PORT must be a number");
 		let port = 3000;
-		let host = "localhost";
+		let host;
 		let cb;
 		if (args.length === 1) {
 			port = args[0];
 		} else if (args.length === 2) {
+			port = args[0];
+			cb = args[1];
 		} else {
 			port = args[0];
 			host = args[1];
 			cb = args[2];
 		}
-		this.tcpServer.listen(port, host, cb);
+		this.#tcpServer.listen(port, host, cb);
 	}
 }
-
-const httz = new Httz();
-httz.createServer((req, res) => {
-	res.statusCode = 400;
-	res.end("hello there postman");
-});
-httz.listen(3000, "localhost", () => {});
