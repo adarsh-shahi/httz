@@ -105,9 +105,4 @@ class Httz {
 	}
 }
 
-const httz = new Httz();
-httz.createServer((req, res) => {
-	res.statusCode = 400;
-	res.end(JSON.stringify({ name: "adarsh", lastName: "shahi", age: 21 }));
-});
-httz.listen(3000, "localhost", () => {});
+export default Httz;
