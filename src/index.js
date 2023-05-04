@@ -1,6 +1,6 @@
 import net from "net";
 
-class Httz {
+export default class httz {
 	#tcpServer;
 	#request;
 	#response;
@@ -49,7 +49,7 @@ class Httz {
 	}
 
 	createServer(cb) {
-		this.tcpServer = net.createServer((socket) => {
+		this.#tcpServer = net.createServer((socket) => {
 			let body = "";
 			socket.on("data", (data) => {
 				this.#data = "";
@@ -101,8 +101,6 @@ class Httz {
 			host = args[1];
 			cb = args[2];
 		}
-		this.tcpServer.listen(port, host, cb);
+		this.#tcpServer.listen(port, host, cb);
 	}
 }
-
-export default Httz;
